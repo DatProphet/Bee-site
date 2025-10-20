@@ -107,11 +107,12 @@ function Navigation({ cartCount }) {
             <Link to="/services" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Services</Link>
             <Link to="/blog" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
             {isAdmin && <Link to="/admin" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Admin</Link>}
+            {isCustomer && <Link to="/account" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>My Account</Link>}
             <Link to="/cart" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Cart ({cartCount})</Link>
-            {isAdmin ? (
+            {isCustomer || isAdmin ? (
               <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="block nav-link">Logout</button>
             ) : (
-              <Link to="/admin/login" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Admin Login</Link>
+              <Link to="/customer/login" className="block nav-link" onClick={() => setMobileMenuOpen(false)}>Login</Link>
             )}
           </div>
         )}
