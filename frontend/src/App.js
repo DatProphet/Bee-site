@@ -1044,86 +1044,245 @@ function AdminDashboard() {
     <div className="page-container">
       <div className="container-custom max-w-6xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="page-title" data-testid="admin-dashboard-title">Blog Management</h1>
+          <h1 className="page-title" data-testid="admin-dashboard-title">Admin Dashboard</h1>
           <button
             onClick={() => {
               setShowForm(!showForm);
-              setEditingPost(null);
-              setFormData({ title: '', content: '', author: '', image_url: '', tags: '' });
+              setEditingItem(null);
+              setFormData({ title: '', content: '', author: '', image_url: '', tags: '', name: '', description: '', price: '', category: 'honey', stock: '' });
             }}
             className="btn-primary"
-            data-testid="toggle-post-form"
+            data-testid="toggle-form"
           >
-            {showForm ? 'Cancel' : 'New Post'}
+            {showForm ? 'Cancel' : `New ${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'}`}
           </button>
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-4 mb-8 border-b border-golden-500/20">
+          <button
+            onClick={() => { setActiveTab('blog'); setShowForm(false); }}
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'blog' ? 'text-golden-400 border-b-2 border-golden-400' : 'text-gray-400 hover:text-golden-300'}`}
+            data-testid="tab-blog"
+          >
+            Blog Posts
+          </button>
+          <button
+            onClick={() => { setActiveTab('products'); setShowForm(false); }}
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'products' ? 'text-golden-400 border-b-2 border-golden-400' : 'text-gray-400 hover:text-golden-300'}`}
+            data-testid="tab-products"
+          >
+            Products
+          </button>
+          <button
+            onClick={() => { setActiveTab('services'); setShowForm(false); }}
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'services' ? 'text-golden-400 border-b-2 border-golden-400' : 'text-gray-400 hover:text-golden-300'}`}
+            data-testid="tab-services"
+          >
+            Services
+          </button>
+        </div>
+
+        {/* Forms */}
         {showForm && (
-          <form onSubmit={handleSubmit} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-8 space-y-4" data-testid="blog-post-form">
-            <div>
-              <label className="block text-gray-300 mb-2">Title</label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="input-field"
-                data-testid="blog-title-input"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Content</label>
-              <textarea
-                required
-                rows="10"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                className="input-field"
-                data-testid="blog-content-input"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Author</label>
-              <input
-                type="text"
-                required
-                value={formData.author}
-                onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                className="input-field"
-                data-testid="blog-author-input"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Image URL</label>
-              <input
-                type="url"
-                required
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                className="input-field"
-                data-testid="blog-image-input"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-300 mb-2">Tags (comma-separated)</label>
-              <input
-                type="text"
-                required
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="input-field"
-                placeholder="beginner, guide, tips"
-                data-testid="blog-tags-input"
-              />
-            </div>
-            <button type="submit" className="btn-primary" data-testid="submit-blog-post">
-              {editingPost ? 'Update Post' : 'Create Post'}
+          <form onSubmit={handleSubmit} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-8 space-y-4" data-testid="admin-form">
+            {activeTab === 'blog' && (
+              <>
+                <div>
+                  <label className="block text-gray-300 mb-2">Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="input-field"
+                    data-testid="blog-title-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Content</label>
+                  <textarea
+                    required
+                    rows="10"
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    className="input-field"
+                    data-testid="blog-content-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Author</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.author}
+                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                    className="input-field"
+                    data-testid="blog-author-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Image URL</label>
+                  <input
+                    type="url"
+                    required
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    className="input-field"
+                    data-testid="blog-image-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Tags (comma-separated)</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.tags}
+                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                    className="input-field"
+                    placeholder="beginner, guide, tips"
+                    data-testid="blog-tags-input"
+                  />
+                </div>
+              </>
+            )}
+
+            {activeTab === 'products' && (
+              <>
+                <div>
+                  <label className="block text-gray-300 mb-2">Product Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="input-field"
+                    data-testid="product-name-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Category</label>
+                  <select
+                    required
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="input-field"
+                    data-testid="product-category-input"
+                  >
+                    <option value="honey">Honey</option>
+                    <option value="wax">Wax</option>
+                    <option value="candles">Candles</option>
+                    <option value="queens">Queens</option>
+                    <option value="nucs">Nucs</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="input-field"
+                    data-testid="product-price-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Stock</label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    className="input-field"
+                    data-testid="product-stock-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Description</label>
+                  <textarea
+                    required
+                    rows="4"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="input-field"
+                    data-testid="product-description-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Image URL</label>
+                  <input
+                    type="url"
+                    required
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    className="input-field"
+                    data-testid="product-image-input"
+                  />
+                </div>
+              </>
+            )}
+
+            {activeTab === 'services' && (
+              <>
+                <div>
+                  <label className="block text-gray-300 mb-2">Service Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="input-field"
+                    data-testid="service-name-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="input-field"
+                    data-testid="service-price-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Description</label>
+                  <textarea
+                    required
+                    rows="4"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="input-field"
+                    data-testid="service-description-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 mb-2">Image URL</label>
+                  <input
+                    type="url"
+                    required
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    className="input-field"
+                    data-testid="service-image-input"
+                  />
+                </div>
+              </>
+            )}
+
+            <button type="submit" className="btn-primary" data-testid="submit-form">
+              {editingItem ? `Update ${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'}` : `Create ${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'}`}
             </button>
           </form>
         )}
 
-        <div className="space-y-4" data-testid="admin-posts-list">
-          {posts.map(post => (
+        {/* List Items */}
+        <div className="space-y-4" data-testid="admin-items-list">
+          {activeTab === 'blog' && posts.map(post => (
             <div key={post.id} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 flex justify-between items-start" data-testid={`admin-post-${post.id}`}>
               <div className="flex-1">
                 <h3 className="text-xl font-semibold text-white mb-2">{post.title}</h3>
@@ -1146,6 +1305,68 @@ function AdminDashboard() {
                   onClick={() => handleDelete(post.id)}
                   className="text-red-400 hover:text-red-300 px-3 py-1 border border-red-500/30 rounded"
                   data-testid={`delete-post-${post.id}`}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {activeTab === 'products' && products.map(product => (
+            <div key={product.id} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 flex justify-between items-start" data-testid={`admin-product-${product.id}`}>
+              <div className="flex gap-4 flex-1">
+                <img src={product.image_url} alt={product.name} className="w-24 h-24 object-cover rounded" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-1">{product.name}</h3>
+                  <p className="text-xs text-golden-400 uppercase mb-2">{product.category}</p>
+                  <p className="text-gray-400 text-sm mb-2 line-clamp-2">{product.description}</p>
+                  <div className="flex gap-4">
+                    <span className="text-golden-400 font-semibold">${product.price}</span>
+                    <span className="text-gray-400">Stock: {product.stock}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 ml-4">
+                <button
+                  onClick={() => handleEdit(product)}
+                  className="text-golden-400 hover:text-golden-300 px-3 py-1 border border-golden-500/30 rounded"
+                  data-testid={`edit-product-${product.id}`}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(product.id)}
+                  className="text-red-400 hover:text-red-300 px-3 py-1 border border-red-500/30 rounded"
+                  data-testid={`delete-product-${product.id}`}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {activeTab === 'services' && services.map(service => (
+            <div key={service.id} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 flex justify-between items-start" data-testid={`admin-service-${service.id}`}>
+              <div className="flex gap-4 flex-1">
+                <img src={service.image_url} alt={service.name} className="w-24 h-24 object-cover rounded" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-2">{service.name}</h3>
+                  <p className="text-gray-400 text-sm mb-2">{service.description}</p>
+                  <span className="text-golden-400 font-semibold">${service.price}</span>
+                </div>
+              </div>
+              <div className="flex gap-2 ml-4">
+                <button
+                  onClick={() => handleEdit(service)}
+                  className="text-golden-400 hover:text-golden-300 px-3 py-1 border border-golden-500/30 rounded"
+                  data-testid={`edit-service-${service.id}`}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(service.id)}
+                  className="text-red-400 hover:text-red-300 px-3 py-1 border border-red-500/30 rounded"
+                  data-testid={`delete-service-${service.id}`}
                 >
                   Delete
                 </button>
