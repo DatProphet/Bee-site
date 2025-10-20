@@ -681,6 +681,7 @@ function Checkout() {
     phone: ''
   });
   const [loading, setLoading] = useState(false);
+  const [customer, setCustomer] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -689,7 +690,29 @@ function Checkout() {
       navigate('/cart');
     }
     setCart(cartData);
+    
+    // Check if customer is logged in and auto-fill
+    const customerToken = localStorage.getItem('customer_token');
+    if (customerToken) {
+      fetchCustomerProfile(customerToken);
+    }
   }, [navigate]);
+
+  const fetchCustomerProfile = async (token) => {
+    try {
+      const response = await axios.get(`${API}/customer/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCustomer(response.data);
+      setFormData({
+        name: response.data.name,
+        email: response.data.email,
+        phone: response.data.phone
+      });
+    } catch (error) {
+      console.error('Failed to load customer profile');
+    }
+  };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -700,6 +723,7 @@ function Checkout() {
     try {
       // Create order
       const orderData = {
+        customer_id: customer?.id || null, // null for guest checkout
         customer_name: formData.name,
         customer_email: formData.email,
         customer_phone: formData.phone,
@@ -726,7 +750,12 @@ function Checkout() {
       toast.success('Order placed successfully! (PayPal integration in sandbox mode)');
       localStorage.removeItem('cart');
       window.dispatchEvent(new Event('cartUpdated'));
-      navigate('/');
+      
+      if (customer) {
+        navigate('/account');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       toast.error('Failed to process order. Please try again.');
     } finally {
@@ -738,6 +767,23 @@ function Checkout() {
     <div className="page-container">
       <div className="container-custom max-w-2xl">
         <h1 className="page-title" data-testid="checkout-page-title">Checkout</h1>
+
+        {!customer && (
+          <div className="bg-golden-500/10 border border-golden-500/30 rounded-lg p-4 mb-6">
+            <p className="text-golden-400 mb-2">Have an account?</p>
+            <Link to="/customer/login" className="text-golden-300 hover:text-golden-200 underline">
+              Login to auto-fill your information and track orders
+            </Link>
+          </div>
+        )}
+
+        {customer && (
+          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-6">
+            <p className="text-green-400">
+              ✓ Logged in as {customer.name} - Order will be saved to your account
+            </p>
+          </div>
+        )}
 
         <div className="bg-dark-800 rounded-lg p-6 border border-golden-500/20 mb-8">
           <h2 className="text-xl font-semibold text-white mb-4">Order Summary</h2>
