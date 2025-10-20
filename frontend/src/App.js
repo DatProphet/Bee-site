@@ -919,56 +919,124 @@ function AdminDashboard() {
     const token = localStorage.getItem('admin_token');
 
     try {
-      const postData = {
-        ...formData,
-        tags: formData.tags.split(',').map(t => t.trim()).filter(t => t)
-      };
+      if (activeTab === 'blog') {
+        const postData = {
+          title: formData.title,
+          content: formData.content,
+          author: formData.author,
+          image_url: formData.image_url,
+          tags: formData.tags.split(',').map(t => t.trim()).filter(t => t)
+        };
 
-      if (editingPost) {
-        await axios.put(`${API}/blog/${editingPost.id}`, postData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        toast.success('Post updated successfully');
-      } else {
-        await axios.post(`${API}/blog`, postData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        toast.success('Post created successfully');
+        if (editingItem) {
+          await axios.put(`${API}/blog/${editingItem.id}`, postData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Post updated successfully');
+        } else {
+          await axios.post(`${API}/blog`, postData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Post created successfully');
+        }
+      } else if (activeTab === 'products') {
+        const productData = {
+          name: formData.name,
+          category: formData.category,
+          price: parseFloat(formData.price),
+          description: formData.description,
+          stock: parseInt(formData.stock),
+          image_url: formData.image_url
+        };
+
+        if (editingItem) {
+          await axios.put(`${API}/products/${editingItem.id}`, productData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Product updated successfully');
+        } else {
+          await axios.post(`${API}/products`, productData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Product created successfully');
+        }
+      } else if (activeTab === 'services') {
+        const serviceData = {
+          name: formData.name,
+          description: formData.description,
+          price: parseFloat(formData.price),
+          image_url: formData.image_url
+        };
+
+        if (editingItem) {
+          await axios.put(`${API}/services/${editingItem.id}`, serviceData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Service updated successfully');
+        } else {
+          await axios.post(`${API}/services`, serviceData, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          toast.success('Service created successfully');
+        }
       }
 
       setShowForm(false);
-      setEditingPost(null);
-      setFormData({ title: '', content: '', author: '', image_url: '', tags: '' });
-      fetchPosts();
+      setEditingItem(null);
+      setFormData({ title: '', content: '', author: '', image_url: '', tags: '', name: '', description: '', price: '', category: 'honey', stock: '' });
+      fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to save post');
+      toast.error(error.response?.data?.detail || 'Failed to save');
     }
   };
 
-  const handleEdit = (post) => {
-    setEditingPost(post);
-    setFormData({
-      title: post.title,
-      content: post.content,
-      author: post.author,
-      image_url: post.image_url,
-      tags: post.tags.join(', ')
-    });
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    if (activeTab === 'blog') {
+      setFormData({
+        title: item.title,
+        content: item.content,
+        author: item.author,
+        image_url: item.image_url,
+        tags: item.tags.join(', ')
+      });
+    } else if (activeTab === 'products') {
+      setFormData({
+        name: item.name,
+        category: item.category,
+        price: item.price.toString(),
+        description: item.description,
+        stock: item.stock.toString(),
+        image_url: item.image_url
+      });
+    } else if (activeTab === 'services') {
+      setFormData({
+        name: item.name,
+        description: item.description,
+        price: item.price.toString(),
+        image_url: item.image_url
+      });
+    }
     setShowForm(true);
   };
 
-  const handleDelete = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
+  const handleDelete = async (itemId) => {
+    if (!window.confirm(`Are you sure you want to delete this ${activeTab === 'blog' ? 'post' : activeTab === 'products' ? 'product' : 'service'}?`)) return;
 
     const token = localStorage.getItem('admin_token');
     try {
-      await axios.delete(`${API}/blog/${postId}`, {
+      let endpoint = '';
+      if (activeTab === 'blog') endpoint = `${API}/blog/${itemId}`;
+      else if (activeTab === 'products') endpoint = `${API}/products/${itemId}`;
+      else if (activeTab === 'services') endpoint = `${API}/services/${itemId}`;
+
+      await axios.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Post deleted successfully');
-      fetchPosts();
+      toast.success(`${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'} deleted successfully`);
+      fetchData();
     } catch (error) {
-      toast.error('Failed to delete post');
+      toast.error('Failed to delete');
     }
   };
 
