@@ -1484,6 +1484,9 @@ function App() {
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/customer/register" element={<CustomerRegister />} />
+          <Route path="/customer/login" element={<CustomerLogin />} />
+          <Route path="/account" element={<CustomerAccount />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
