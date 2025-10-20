@@ -70,12 +70,21 @@ function Navigation({ cartCount }) {
                 </span>
               )}
             </Link>
-            {isAdmin ? (
+            {isCustomer ? (
+              <>
+                <Link to="/account" className="nav-link" data-testid="nav-account">
+                  {customer?.name || 'My Account'}
+                </Link>
+                <button onClick={handleLogout} className="nav-link" data-testid="customer-logout-btn">
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </>
+            ) : isAdmin ? (
               <button onClick={handleLogout} className="nav-link" data-testid="logout-btn">
                 <LogOut className="w-5 h-5" />
               </button>
             ) : (
-              <Link to="/admin/login" className="nav-link" data-testid="nav-login">
+              <Link to="/customer/login" className="nav-link" data-testid="nav-login">
                 <User className="w-5 h-5" />
               </Link>
             )}
