@@ -111,21 +111,60 @@ class OrderItem(BaseModel):
 class Order(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_id: Optional[str] = None  # None for guest checkout
     customer_name: str
     customer_email: EmailStr
     customer_phone: str
     items: List[OrderItem]
     total: float
     payment_status: str = "pending"  # pending, completed, failed
+    order_status: str = "pending"  # pending, completed, shipped
     paypal_order_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OrderCreate(BaseModel):
+    customer_id: Optional[str] = None
     customer_name: str
     customer_email: EmailStr
     customer_phone: str
     items: List[OrderItem]
     total: float
+
+class Customer(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    password_hash: str
+    name: str
+    phone: str
+    address: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CustomerRegister(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    phone: str
+    address: Optional[str] = None
+
+class CustomerLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class CustomerProfile(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    email: EmailStr
+    name: str
+    phone: str
+    address: Optional[str] = None
+    created_at: datetime
+
+class CustomerProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    password: Optional[str] = None
 
 class AdminUser(BaseModel):
     model_config = ConfigDict(extra="ignore")
