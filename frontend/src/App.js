@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link, useNavigate, useParams } from 'reac
 import axios from 'axios';
 import { ShoppingCart, Menu, X, Plus, Minus, Trash2, User, LogOut } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
+import { CustomerRegister, CustomerLogin, CustomerAccount } from './CustomerPages';
 import '@/App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -12,18 +13,36 @@ const API = `${BACKEND_URL}/api`;
 function Navigation({ cartCount }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isCustomer, setIsCustomer] = useState(false);
+  const [customer, setCustomer] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    setIsAdmin(!!token);
+    const adminToken = localStorage.getItem('admin_token');
+    const customerToken = localStorage.getItem('customer_token');
+    const customerData = localStorage.getItem('customer');
+    
+    setIsAdmin(!!adminToken);
+    setIsCustomer(!!customerToken);
+    if (customerData) {
+      setCustomer(JSON.parse(customerData));
+    }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    setIsAdmin(false);
-    navigate('/');
-    toast.success('Logged out successfully');
+    if (isAdmin) {
+      localStorage.removeItem('admin_token');
+      setIsAdmin(false);
+      navigate('/');
+      toast.success('Admin logged out successfully');
+    } else if (isCustomer) {
+      localStorage.removeItem('customer_token');
+      localStorage.removeItem('customer');
+      setIsCustomer(false);
+      setCustomer(null);
+      navigate('/');
+      toast.success('Logged out successfully');
+    }
   };
 
   return (
