@@ -374,8 +374,121 @@ async def login_admin(login_data: AdminLogin):
     if not admin or not pwd_context.verify(login_data.password, admin['password_hash']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    token = create_access_token({"email": admin['email'], "id": admin['id']})
+    token = create_access_token({"email": admin['email'], "id": admin['id'], "role": "admin"})
     return {"token": token, "email": admin['email']}
+
+# Customer routes
+@api_router.post("/customer/register")
+async def register_customer(customer_data: CustomerRegister):
+    # Check if customer already exists
+    existing = await db.customers.find_one({"email": customer_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    hashed_password = pwd_context.hash(customer_data.password)
+    customer = Customer(
+        email=customer_data.email,
+        password_hash=hashed_password,
+        name=customer_data.name,
+        phone=customer_data.phone,
+        address=customer_data.address
+    )
+    doc = customer.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.customers.insert_one(doc)
+    
+    token = create_access_token({"email": customer.email, "id": customer.id, "role": "customer"})
+    return {"token": token, "customer": {
+        "id": customer.id,
+        "email": customer.email,
+        "name": customer.name
+    }}
+
+@api_router.post("/customer/login")
+async def login_customer(login_data: CustomerLogin):
+    customer = await db.customers.find_one({"email": login_data.email})
+    if not customer or not pwd_context.verify(login_data.password, customer['password_hash']):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_access_token({"email": customer['email'], "id": customer['id'], "role": "customer"})
+    return {"token": token, "customer": {
+        "id": customer['id'],
+        "email": customer['email'],
+        "name": customer['name']
+    }}
+
+@api_router.get("/customer/profile", response_model=CustomerProfile)
+async def get_customer_profile(token: dict = Depends(verify_token)):
+    customer = await db.customers.find_one({"id": token['id']}, {"_id": 0, "password_hash": 0})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    if isinstance(customer.get('created_at'), str):
+        customer['created_at'] = datetime.fromisoformat(customer['created_at'])
+    return customer
+
+@api_router.put("/customer/profile", response_model=CustomerProfile)
+async def update_customer_profile(profile_data: CustomerProfileUpdate, token: dict = Depends(verify_token)):
+    update_data = {k: v for k, v in profile_data.model_dump().items() if v is not None}
+    
+    # If password is being updated, hash it
+    if 'password' in update_data:
+        update_data['password_hash'] = pwd_context.hash(update_data.pop('password'))
+    
+    if update_data:
+        await db.customers.update_one({"id": token['id']}, {"$set": update_data})
+    
+    customer = await db.customers.find_one({"id": token['id']}, {"_id": 0, "password_hash": 0})
+    if isinstance(customer.get('created_at'), str):
+        customer['created_at'] = datetime.fromisoformat(customer['created_at'])
+    return customer
+
+@api_router.get("/customer/orders", response_model=List[Order])
+async def get_customer_orders(token: dict = Depends(verify_token)):
+    orders = await db.orders.find({"customer_id": token['id']}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for order in orders:
+        if isinstance(order.get('created_at'), str):
+            order['created_at'] = datetime.fromisoformat(order['created_at'])
+    return orders
+
+# Admin customer management routes
+@api_router.get("/admin/customers")
+async def get_all_customers(token: dict = Depends(verify_token)):
+    customers = await db.customers.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    for customer in customers:
+        if isinstance(customer.get('created_at'), str):
+            customer['created_at'] = datetime.fromisoformat(customer['created_at'])
+        # Get order count for each customer
+        order_count = await db.orders.count_documents({"customer_id": customer['id']})
+        customer['order_count'] = order_count
+    return customers
+
+@api_router.get("/admin/customers/{customer_id}/orders")
+async def get_customer_orders_admin(customer_id: str, token: dict = Depends(verify_token)):
+    orders = await db.orders.find({"customer_id": customer_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for order in orders:
+        if isinstance(order.get('created_at'), str):
+            order['created_at'] = datetime.fromisoformat(order['created_at'])
+    return orders
+
+@api_router.get("/admin/orders")
+async def get_all_orders_admin(token: dict = Depends(verify_token)):
+    orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for order in orders:
+        if isinstance(order.get('created_at'), str):
+            order['created_at'] = datetime.fromisoformat(order['created_at'])
+    return orders
+
+@api_router.put("/admin/orders/{order_id}/status")
+async def update_order_status(order_id: str, status_data: dict, token: dict = Depends(verify_token)):
+    order_status = status_data.get('order_status')
+    if order_status not in ['pending', 'completed', 'shipped']:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.orders.update_one({"id": order_id}, {"$set": {"order_status": order_status}})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return {"message": "Order status updated"}
 
 # Order routes
 @api_router.post("/orders", response_model=Order)
