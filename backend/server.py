@@ -199,6 +199,62 @@ async def get_service(service_id: str):
         raise HTTPException(status_code=404, detail="Service not found")
     return service
 
+@api_router.post("/services", response_model=Service)
+async def create_service(service_data: ServiceCreate, token: dict = Depends(verify_token)):
+    service = Service(**service_data.model_dump())
+    doc = service.model_dump()
+    await db.services.insert_one(doc)
+    return service
+
+@api_router.put("/services/{service_id}", response_model=Service)
+async def update_service(service_id: str, service_data: ServiceCreate, token: dict = Depends(verify_token)):
+    existing_service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not existing_service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    update_data = service_data.model_dump()
+    await db.services.update_one({"id": service_id}, {"$set": update_data})
+    updated_service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    return updated_service
+
+@api_router.delete("/services/{service_id}")
+async def delete_service(service_id: str, token: dict = Depends(verify_token)):
+    result = await db.services.delete_one({"id": service_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return {"message": "Service deleted"}
+
+# Admin product routes
+@api_router.post("/products", response_model=Product)
+async def create_product(product_data: ProductCreate, token: dict = Depends(verify_token)):
+    product = Product(**product_data.model_dump())
+    doc = product.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.products.insert_one(doc)
+    return product
+
+@api_router.put("/products/{product_id}", response_model=Product)
+async def update_product(product_id: str, product_data: ProductCreate, token: dict = Depends(verify_token)):
+    existing_product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not existing_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    update_data = product_data.model_dump()
+    await db.products.update_one({"id": product_id}, {"$set": update_data})
+    updated_product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    
+    if isinstance(updated_product.get('created_at'), str):
+        updated_product['created_at'] = datetime.fromisoformat(updated_product['created_at'])
+    
+    return updated_product
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str, token: dict = Depends(verify_token)):
+    result = await db.products.delete_one({"id": product_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product deleted"}
+
 # Blog routes
 @api_router.get("/blog", response_model=List[BlogPost])
 async def get_blog_posts():
