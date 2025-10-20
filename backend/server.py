@@ -365,7 +365,7 @@ async def register_admin(admin_data: AdminRegister):
     doc['created_at'] = doc['created_at'].isoformat()
     await db.admin_users.insert_one(doc)
     
-    token = create_access_token({"email": admin.email, "id": admin.id})
+    token = create_access_token({"email": admin.email, "id": admin.id, "role": "admin"})
     return {"token": token, "email": admin.email}
 
 @api_router.post("/admin/login")
