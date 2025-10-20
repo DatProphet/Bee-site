@@ -852,15 +852,23 @@ function AdminLogin() {
 
 // Admin Dashboard
 function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState('blog'); // blog, products, services
   const [posts, setPosts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [services, setServices] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingPost, setEditingPost] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     author: '',
     image_url: '',
-    tags: ''
+    tags: '',
+    name: '',
+    description: '',
+    price: '',
+    category: 'honey',
+    stock: ''
   });
   const navigate = useNavigate();
 
@@ -870,8 +878,14 @@ function AdminDashboard() {
       navigate('/admin/login');
       return;
     }
-    fetchPosts();
-  }, [navigate]);
+    fetchData();
+  }, [navigate, activeTab]);
+
+  const fetchData = () => {
+    if (activeTab === 'blog') fetchPosts();
+    else if (activeTab === 'products') fetchProducts();
+    else if (activeTab === 'services') fetchServices();
+  };
 
   const fetchPosts = async () => {
     try {
@@ -879,6 +893,24 @@ function AdminDashboard() {
       setPosts(response.data);
     } catch (error) {
       toast.error('Failed to load posts');
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API}/products`);
+      setProducts(response.data);
+    } catch (error) {
+      toast.error('Failed to load products');
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get(`${API}/services`);
+      setServices(response.data);
+    } catch (error) {
+      toast.error('Failed to load services');
     }
   };
 
