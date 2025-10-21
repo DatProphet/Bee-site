@@ -993,6 +993,31 @@ function AdminDashboard() {
     }
   };
 
+  const fetchCustomers = async () => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.get(`${API}/admin/customers`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCustomers(response.data);
+    } catch (error) {
+      toast.error('Failed to load customers');
+    }
+  };
+
+  const fetchCustomerOrders = async (customerId) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.get(`${API}/admin/customers/${customerId}/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOrders(response.data);
+      setSelectedCustomer(customerId);
+    } catch (error) {
+      toast.error('Failed to load customer orders');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('admin_token');
