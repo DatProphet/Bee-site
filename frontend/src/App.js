@@ -427,16 +427,22 @@ function Services() {
                   </h3>
                   <p className="text-gray-300 mb-4 line-clamp-2" data-testid={`service-description-${service.id}`}>{service.description}</p>
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400 mb-1">Starting at</p>
-                      <span className="text-2xl font-bold text-golden-400" data-testid={`service-price-${service.id}`}>${service.price}</span>
-                    </div>
+                    {service.price > 0 ? (
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Starting at</p>
+                        <span className="text-2xl font-bold text-golden-400" data-testid={`service-price-${service.id}`}>${service.price}</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-lg font-semibold text-golden-400" data-testid={`service-price-${service.id}`}>Contact for Pricing</span>
+                      </div>
+                    )}
                     <button
-                      onClick={() => addToCart(service)}
+                      onClick={() => service.price > 0 ? addToCart(service) : navigate(`/services/${service.id}`)}
                       className="btn-primary-sm"
                       data-testid={`add-service-to-cart-${service.id}`}
                     >
-                      Book Service
+                      {service.price > 0 ? 'Book Service' : 'Request Quote'}
                     </button>
                   </div>
                   <button
