@@ -362,6 +362,7 @@ function ProductDetail() {
 function Services() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchServices();
@@ -409,14 +410,23 @@ function Services() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="services-grid">
             {services.map(service => (
               <div key={service.id} className="service-card" data-testid={`service-${service.id}`}>
-                <div className="service-image">
+                <div className="service-image cursor-pointer" onClick={() => navigate(`/services/${service.id}`)}>
                   <img src={service.image_url} alt={service.name} />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-2xl font-semibold text-white mb-3" data-testid={`service-name-${service.id}`}>{service.name}</h3>
-                  <p className="text-gray-300 mb-4" data-testid={`service-description-${service.id}`}>{service.description}</p>
+                  <h3 
+                    className="text-2xl font-semibold text-white mb-3 cursor-pointer hover:text-golden-400 transition-colors" 
+                    data-testid={`service-name-${service.id}`}
+                    onClick={() => navigate(`/services/${service.id}`)}
+                  >
+                    {service.name}
+                  </h3>
+                  <p className="text-gray-300 mb-4 line-clamp-2" data-testid={`service-description-${service.id}`}>{service.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-golden-400" data-testid={`service-price-${service.id}`}>${service.price}</span>
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Starting at</p>
+                      <span className="text-2xl font-bold text-golden-400" data-testid={`service-price-${service.id}`}>${service.price}</span>
+                    </div>
                     <button
                       onClick={() => addToCart(service)}
                       className="btn-primary-sm"
@@ -425,11 +435,169 @@ function Services() {
                       Book Service
                     </button>
                   </div>
+                  <button
+                    onClick={() => navigate(`/services/${service.id}`)}
+                    className="text-golden-400 hover:text-golden-300 text-sm mt-3 underline"
+                    data-testid={`view-details-${service.id}`}
+                  >
+                    View Details →
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Service Detail Page
+function ServiceDetail() {
+  const { id } = useParams();
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchService();
+  }, [id]);
+
+  const fetchService = async () => {
+    try {
+      const response = await axios.get(`${API}/services/${id}`);
+      setService(response.data);
+    } catch (error) {
+      toast.error('Failed to load service');
+      navigate('/services');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addToCart = () => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existingItem = cart.find(item => item.id === service.id && item.type === 'service');
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ ...service, type: 'service', quantity: 1 });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast.success(`${service.name} added to cart`);
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="text-center py-20">
+          <div className="inline-block w-8 h-8 border-4 border-golden-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="container-custom">
+        <button onClick={() => navigate('/services')} className="text-golden-400 hover:text-golden-300 mb-8" data-testid="back-to-services">
+          ← Back to Services
+        </button>
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="service-detail-image" data-testid="service-detail-image">
+            <img src={service.image_url} alt={service.name} className="w-full h-full object-cover rounded-lg" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-4" data-testid="service-detail-name">{service.name}</h1>
+            <div className="mb-6">
+              <p className="text-sm text-gray-400 mb-1">Starting at</p>
+              <p className="text-3xl font-bold text-golden-400" data-testid="service-detail-price">${service.price}</p>
+            </div>
+            <div className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-6">
+              <h2 className="text-xl font-semibold text-golden-400 mb-4">Service Description</h2>
+              <p className="text-gray-300 leading-relaxed" data-testid="service-detail-description">{service.description}</p>
+            </div>
+            
+            <div className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-6">
+              <h2 className="text-xl font-semibold text-golden-400 mb-4">What's Included</h2>
+              <ul className="space-y-2 text-gray-300">
+                {service.name === 'Pollination Services' ? (
+                  <>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Professional hive placement in orchards, farms, or gardens</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Healthy, active bee colonies optimized for pollination</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Regular monitoring and maintenance during pollination period</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Flexible pricing based on acreage and crop type</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Consultation on optimal pollination strategies</span>
+                    </li>
+                  </>
+                ) : service.name === 'Beekeeping Consultation' ? (
+                  <>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>One-on-one consultation session</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Complete hive inspection and assessment</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Personalized advice for your specific situation</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Written recommendations and action plan</span>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Complete hive setup and installation</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Initial colony placement</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Equipment setup guidance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-golden-400 mr-2">✓</span>
+                      <span>Basic training on hive maintenance</span>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            <button
+              onClick={addToCart}
+              className="btn-primary w-full md:w-auto"
+              data-testid="service-detail-book-btn"
+            >
+              Book This Service
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
