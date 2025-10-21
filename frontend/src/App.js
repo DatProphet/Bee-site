@@ -51,7 +51,7 @@ function Navigation({ cartCount }) {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="honeycomb-icon"></div>
-            <span className="brand-name">Golden Hive Apiary</span>
+            <span className="brand-name">Buzz'N Bees Apiary</span>
           </Link>
 
           {/* Desktop Navigation */}
