@@ -528,10 +528,15 @@ function ServiceDetail() {
                   <p className="text-lg font-semibold text-golden-400 mb-2">${service.price} per hive</p>
                   <p className="text-sm text-gray-400">Number of hives needed varies by crop type and acreage</p>
                 </>
-              ) : (
+              ) : service.price > 0 ? (
                 <>
                   <p className="text-sm text-gray-400 mb-1">Starting at</p>
                   <p className="text-3xl font-bold text-golden-400" data-testid="service-detail-price">${service.price}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl font-semibold text-golden-400 mb-2">Contact for Pricing</p>
+                  <p className="text-sm text-gray-400">Pricing varies based on consultation needs and hive count</p>
                 </>
               )}
             </div>
