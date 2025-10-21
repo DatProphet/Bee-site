@@ -50,7 +50,11 @@ function Navigation({ cartCount }) {
       <div className="container-custom py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="honeycomb-icon"></div>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_beekeep-shop/artifacts/fywqc79j_The%20Buzz%20N%20Bees-01.png" 
+              alt="The Buzz'N Bees Logo" 
+              className="h-12 w-12 object-contain"
+            />
             <span className="brand-name">Buzz'N Bees Apiary</span>
           </Link>
 
