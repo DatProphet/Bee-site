@@ -134,7 +134,7 @@ function Home() {
         <div className="hero-overlay"></div>
         <div className="container-custom relative z-10 text-center">
           <h1 className="hero-title" data-testid="hero-title">
-            Local RAW Honey
+            Local Raw HONEY
           </h1>
           <p className="hero-subtitle" data-testid="hero-subtitle">
             From Sustainable Beekeeping Practices
