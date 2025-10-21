@@ -167,6 +167,7 @@ function Home() {
               <div className="feature-icon">✨</div>
               <h3 className="text-xl font-semibold text-golden-400 mb-3">Premium Quality</h3>
               <p className="text-gray-300">Our honey is raw, unfiltered, and free from additives or processing.</p>
+              <p className="text-gray-300 mt-2">From the hive straight to the jar!</p>
             </div>
             <div className="feature-card" data-testid="feature-local">
               <div className="feature-icon">🏡</div>
