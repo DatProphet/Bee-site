@@ -1484,6 +1484,73 @@ function AdminDashboard() {
               </div>
             </div>
           ))}
+
+          {activeTab === 'customers' && customers.map(customer => (
+            <div key={customer.id} className="bg-dark-800 p-6 rounded-lg border border-golden-500/20" data-testid={`admin-customer-${customer.id}`}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-white mb-1">{customer.name}</h3>
+                  <p className="text-gray-400 text-sm">{customer.email}</p>
+                  <p className="text-gray-400 text-sm">{customer.phone}</p>
+                  {customer.address && <p className="text-gray-400 text-sm mt-1">{customer.address}</p>}
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-400 text-sm">Joined: {new Date(customer.created_at).toLocaleDateString()}</p>
+                  <p className="text-golden-400 font-semibold mt-1">{customer.order_count} orders</p>
+                </div>
+              </div>
+              <button
+                onClick={() => fetchCustomerOrders(customer.id)}
+                className="text-golden-400 hover:text-golden-300 px-4 py-2 border border-golden-500/30 rounded"
+                data-testid={`view-customer-orders-${customer.id}`}
+              >
+                View Orders
+              </button>
+              
+              {selectedCustomer === customer.id && orders.length > 0 && (
+                <div className="mt-4 space-y-3 border-t border-golden-500/10 pt-4">
+                  <h4 className="text-lg font-semibold text-golden-400">Order History</h4>
+                  {orders.map(order => (
+                    <div key={order.id} className="bg-dark-700 p-4 rounded">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="text-white font-semibold">Order #{order.id.substring(0, 8)}</p>
+                          <p className="text-gray-400 text-sm">{new Date(order.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-golden-400 font-semibold">${order.total.toFixed(2)}</p>
+                          <div className="flex gap-2 mt-1">
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              order.payment_status === 'completed' ? 'bg-green-500/20 text-green-400' : 
+                              order.payment_status === 'failed' ? 'bg-red-500/20 text-red-400' : 
+                              'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {order.payment_status}
+                            </span>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              order.order_status === 'shipped' ? 'bg-blue-500/20 text-blue-400' : 
+                              order.order_status === 'completed' ? 'bg-green-500/20 text-green-400' : 
+                              'bg-gray-500/20 text-gray-400'
+                            }`}>
+                              {order.order_status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span className="text-gray-300">{item.name} x {item.quantity}</span>
+                            <span className="text-gray-400">${(item.price * item.quantity).toFixed(2)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
