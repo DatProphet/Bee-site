@@ -682,9 +682,15 @@ function ServiceDetail() {
               onClick={addToCart}
               className="btn-primary w-full md:w-auto"
               data-testid="service-detail-book-btn"
+              disabled={service.price === 0}
             >
-              Book This Service
+              {service.price > 0 ? 'Book This Service' : 'Contact Us for Consultation'}
             </button>
+            {service.price === 0 && (
+              <p className="text-sm text-gray-400 mt-3">
+                Please contact us to discuss your specific needs and receive a custom quote.
+              </p>
+            )}
           </div>
         </div>
       </div>
