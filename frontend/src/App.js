@@ -963,6 +963,7 @@ function AdminDashboard() {
     if (activeTab === 'blog') fetchPosts();
     else if (activeTab === 'products') fetchProducts();
     else if (activeTab === 'services') fetchServices();
+    else if (activeTab === 'customers') fetchCustomers();
   };
 
   const fetchPosts = async () => {
