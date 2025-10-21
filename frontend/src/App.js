@@ -598,6 +598,71 @@ function ServiceDetail() {
               </ul>
             </div>
 
+            {service.name === 'Pollination Services' && (
+              <div className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-6">
+                <h2 className="text-xl font-semibold text-golden-400 mb-4">Hive Requirements by Crop Type</h2>
+                <p className="text-sm text-gray-400 mb-4">Reference guide for recommended hives per acre. Actual needs may vary based on field conditions.</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-golden-500/20">
+                        <th className="py-3 px-4 text-golden-400 font-semibold">Crop Type</th>
+                        <th className="py-3 px-4 text-golden-400 font-semibold">Recommended Hives/Acre</th>
+                        <th className="py-3 px-4 text-golden-400 font-semibold">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Apples / Pears</td>
+                        <td className="py-3 px-4 text-gray-300">1–2</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Place hives before 10% bloom for best effect.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Blueberries</td>
+                        <td className="py-3 px-4 text-gray-300">2–5</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Dense blooms, bees need acclimation to field.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Cucumbers / Melons / Squash</td>
+                        <td className="py-3 px-4 text-gray-300">1–2</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Strong colonies preferred; good sun exposure helps.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Clover / Alfalfa (seed)</td>
+                        <td className="py-3 px-4 text-gray-300">0.5–1</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Pollination secondary to honey production.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Canola</td>
+                        <td className="py-3 px-4 text-gray-300">1–2</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Bees improve seed set and yield.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Pumpkins</td>
+                        <td className="py-3 px-4 text-gray-300">1.5–2.5</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Fields over 5 acres should distribute hives evenly.</td>
+                      </tr>
+                      <tr className="border-b border-golden-500/10">
+                        <td className="py-3 px-4 text-white">Sunflowers</td>
+                        <td className="py-3 px-4 text-gray-300">1–2</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Improves oil content and yield.</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 px-4 text-white">Wildflower / Mixed Meadow</td>
+                        <td className="py-3 px-4 text-gray-300">0.5–1</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">Great for maintaining hive health and diversity.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4 p-4 bg-golden-500/10 border border-golden-500/30 rounded">
+                  <p className="text-sm text-golden-400">
+                    <strong>Example:</strong> A 10-acre apple orchard would typically need 10-20 hives (1-2 hives per acre × 10 acres) = 10-20 hives × $300 = $3,000-$6,000
+                  </p>
+                </div>
+              </div>
+            )}
+
             <button
               onClick={addToCart}
               className="btn-primary w-full md:w-auto"
