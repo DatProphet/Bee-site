@@ -1149,17 +1149,19 @@ function AdminDashboard() {
       <div className="container-custom max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="page-title" data-testid="admin-dashboard-title">Admin Dashboard</h1>
-          <button
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingItem(null);
-              setFormData({ title: '', content: '', author: '', image_url: '', tags: '', name: '', description: '', price: '', category: 'honey', stock: '' });
-            }}
-            className="btn-primary"
-            data-testid="toggle-form"
-          >
-            {showForm ? 'Cancel' : `New ${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'}`}
-          </button>
+          {activeTab !== 'customers' && (
+            <button
+              onClick={() => {
+                setShowForm(!showForm);
+                setEditingItem(null);
+                setFormData({ title: '', content: '', author: '', image_url: '', tags: '', name: '', description: '', price: '', category: 'honey', stock: '' });
+              }}
+              className="btn-primary"
+              data-testid="toggle-form"
+            >
+              {showForm ? 'Cancel' : `New ${activeTab === 'blog' ? 'Post' : activeTab === 'products' ? 'Product' : 'Service'}`}
+            </button>
+          )}
         </div>
 
         {/* Tabs */}
