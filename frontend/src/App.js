@@ -149,7 +149,7 @@ function Home() {
       {/* Features Section */}
       <section className="py-20 bg-dark-900">
         <div className="container-custom">
-          <h2 className="section-title" data-testid="why-choose-title">Why Choose Golden Hive</h2>
+          <h2 className="section-title" data-testid="why-choose-title">Why Choose Buzz'N Bees</h2>
           <div className="grid md:grid-cols-3 gap-8 mt-12">
             <div className="feature-card" data-testid="feature-sustainable">
               <div className="feature-icon">🌿</div>
