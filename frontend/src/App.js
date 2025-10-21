@@ -1185,6 +1185,13 @@ function AdminDashboard() {
           >
             Services
           </button>
+          <button
+            onClick={() => { setActiveTab('customers'); setShowForm(false); setSelectedCustomer(null); }}
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'customers' ? 'text-golden-400 border-b-2 border-golden-400' : 'text-gray-400 hover:text-golden-300'}`}
+            data-testid="tab-customers"
+          >
+            Customers
+          </button>
         </div>
 
         {/* Forms */}
