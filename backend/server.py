@@ -204,7 +204,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 # Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Golden Hive Apiary API"}
+    return {"message": "Buzz'N Bees Apiary API"}
 
 # Product routes
 @api_router.get("/products", response_model=List[Product])
