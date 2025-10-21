@@ -513,8 +513,17 @@ function ServiceDetail() {
           <div>
             <h1 className="text-4xl font-bold text-white mb-4" data-testid="service-detail-name">{service.name}</h1>
             <div className="mb-6">
-              <p className="text-sm text-gray-400 mb-1">Starting at</p>
-              <p className="text-3xl font-bold text-golden-400" data-testid="service-detail-price">${service.price}</p>
+              {service.name === 'Pollination Services' ? (
+                <>
+                  <p className="text-lg font-semibold text-golden-400 mb-2">${service.price} per hive</p>
+                  <p className="text-sm text-gray-400">Number of hives needed varies by crop type and acreage</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-gray-400 mb-1">Starting at</p>
+                  <p className="text-3xl font-bold text-golden-400" data-testid="service-detail-price">${service.price}</p>
+                </>
+              )}
             </div>
             <div className="bg-dark-800 p-6 rounded-lg border border-golden-500/20 mb-6">
               <h2 className="text-xl font-semibold text-golden-400 mb-4">Service Description</h2>
