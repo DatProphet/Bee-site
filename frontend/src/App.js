@@ -927,10 +927,13 @@ function AdminLogin() {
 
 // Admin Dashboard
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('blog'); // blog, products, services
+  const [activeTab, setActiveTab] = useState('blog'); // blog, products, services, customers
   const [posts, setPosts] = useState([]);
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
